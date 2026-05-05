@@ -6,8 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
-import co.edu.uqvirtual.pokedex_android_compose.navigation.PokedexNavGraph
+import co.edu.uqvirtual.pokedex_android_compose.navigation.PokedexAppRoot
 import co.edu.uqvirtual.pokedex_android_compose.shared.ui.theme.PokedexTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,8 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PokedexTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    val navController = rememberNavController()
-                    PokedexNavGraph(navController = navController)
+                    PokedexAppRoot()
                 }
             }
         }

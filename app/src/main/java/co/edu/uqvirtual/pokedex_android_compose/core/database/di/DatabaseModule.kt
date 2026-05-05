@@ -3,6 +3,7 @@ package co.edu.uqvirtual.pokedex_android_compose.core.database.di
 import android.content.Context
 import androidx.room.Room
 import co.edu.uqvirtual.pokedex_android_compose.core.database.PokedexDatabase
+import co.edu.uqvirtual.pokedex_android_compose.feature.caughtpokemon.data.local.CaughtPokemonDao
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemondetail.data.local.PokemonDetailDao
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.GenerationDao
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.PokemonDao
@@ -42,4 +43,7 @@ object DatabaseModule {
 
     @Provides
     fun provideRemoteKeysDao(db: PokedexDatabase): RemoteKeysDao = db.remoteKeysDao()
+
+    @Provides
+    fun provideCaughtPokemonDao(db: PokedexDatabase): CaughtPokemonDao = db.caughtPokemonDao()
 }

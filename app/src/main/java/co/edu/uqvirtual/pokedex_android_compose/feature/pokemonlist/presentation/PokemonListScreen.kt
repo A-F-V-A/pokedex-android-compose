@@ -112,6 +112,7 @@ private fun PagedPokemonGrid(
                     id = pokemon.id,
                     name = pokemon.name,
                     imageUrl = pokemon.imageUrl,
+                    types = pokemon.types,
                     onClick = { onPokemonClick(pokemon.id) }
                 )
             }
@@ -157,6 +158,7 @@ private fun FilteredPokemonGrid(
                 id = item.id,
                 name = item.name,
                 imageUrl = item.imageUrl,
+                types = item.types,
                 onClick = { onPokemonClick(item.id) }
             )
         }

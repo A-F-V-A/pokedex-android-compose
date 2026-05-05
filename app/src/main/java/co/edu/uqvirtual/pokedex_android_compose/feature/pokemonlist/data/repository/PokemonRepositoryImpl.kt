@@ -52,7 +52,9 @@ class PokemonRepositoryImpl @Inject constructor(
         generationDao.observeAll().map { list -> list.map { it.toDomain() } }
 
     override fun observePokemonByType(typeName: String): Flow<List<Pokemon>> =
-        pokemonDao.getByType(typeName).map { list -> list.map { it.toDomain() } }
+        pokemonDao.getByType(typeName).map { list ->
+            list.map { it.toDomain().copy(types = listOf(typeName)) }
+        }
 
     override fun observePokemonByGeneration(generationName: String): Flow<List<Pokemon>> =
         pokemonDao.getByGeneration(generationName).map { list -> list.map { it.toDomain() } }

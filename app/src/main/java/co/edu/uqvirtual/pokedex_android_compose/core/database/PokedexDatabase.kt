@@ -2,6 +2,8 @@ package co.edu.uqvirtual.pokedex_android_compose.core.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import co.edu.uqvirtual.pokedex_android_compose.feature.caughtpokemon.data.local.CaughtPokemonDao
+import co.edu.uqvirtual.pokedex_android_compose.feature.caughtpokemon.data.local.CaughtPokemonEntity
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemondetail.data.local.PokemonDetailDao
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemondetail.data.local.PokemonDetailEntity
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.GenerationDao
@@ -23,9 +25,10 @@ import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.T
         GenerationEntity::class,
         PokemonTypeCrossRef::class,
         PokemonGenerationCrossRef::class,
-        RemoteKeysEntity::class
+        RemoteKeysEntity::class,
+        CaughtPokemonEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class PokedexDatabase : RoomDatabase() {
@@ -34,6 +37,7 @@ abstract class PokedexDatabase : RoomDatabase() {
     abstract fun typeDao(): TypeDao
     abstract fun generationDao(): GenerationDao
     abstract fun remoteKeysDao(): RemoteKeysDao
+    abstract fun caughtPokemonDao(): CaughtPokemonDao
 
     companion object {
         const val DATABASE_NAME = "pokedex.db"
