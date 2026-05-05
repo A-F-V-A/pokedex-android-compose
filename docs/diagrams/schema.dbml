@@ -1,0 +1,71 @@
+Project pokedex {
+  database_type: 'SQLite'
+  Note: 'Cache local de PokeAPI gestionada con Room. La fuente unica de verdad para la UI es esta base; Retrofit solo escribe aqui y la UI observa Flows desde Room.'
+}
+
+Table pokemon {
+  id integer [pk, note: 'ID nacional de Pokedex (1..1302)']
+  name varchar [not null, unique]
+  image_url varchar [note: 'URL del official artwork']
+  page integer [note: 'Pagina de Paging 3 a la que pertenece']
+  last_updated_at integer [not null, note: 'Epoch ms para freshness']
+}
+
+Table pokemon_detail {
+  id integer [pk]
+  name varchar [not null]
+  image_url varchar
+  height integer [note: 'En decimetros (PokeAPI)']
+  weight integer [note: 'En hectogramos (PokeAPI)']
+  base_experience integer
+  hp integer
+  attack integer
+  defense integer
+  special_attack integer
+  special_defense integer
+  speed integer
+  types_csv varchar [note: 'CSV de tipos: por ejemplo "fire,flying"']
+  abilities_csv varchar [note: 'CSV de habilidades']
+  last_updated_at integer [not null]
+}
+
+Table type {
+  name varchar [pk, note: 'Slug del tipo: fire, water, etc.']
+  url varchar
+}
+
+Table generation {
+  name varchar [pk, note: 'Slug: generation-i, generation-ii, etc.']
+  url varchar
+}
+
+Table pokemon_type_cross_ref {
+  pokemon_id integer [not null]
+  type_name varchar [not null]
+  indexes {
+    (pokemon_id, type_name) [pk]
+    (type_name)
+  }
+}
+
+Table pokemon_generation_cross_ref {
+  pokemon_id integer [not null]
+  generation_name varchar [not null]
+  indexes {
+    (pokemon_id, generation_name) [pk]
+    (generation_name)
+  }
+}
+
+Table remote_keys {
+  pokemon_id integer [pk]
+  prev_key integer [note: 'null si es la primera pagina']
+  next_key integer [note: 'null si es la ultima pagina']
+}
+
+Ref: pokemon_detail.id > pokemon.id
+Ref: pokemon_type_cross_ref.pokemon_id > pokemon.id
+Ref: pokemon_type_cross_ref.type_name > type.name
+Ref: pokemon_generation_cross_ref.pokemon_id > pokemon.id
+Ref: pokemon_generation_cross_ref.generation_name > generation.name
+Ref: remote_keys.pokemon_id > pokemon.id
