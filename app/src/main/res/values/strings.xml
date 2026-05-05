@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">pokedex-android-compose</string>
+    <string name="app_name">Pokedex</string>
+    <string name="cd_pokemon_image">Imagen del Pokemon</string>
+    <string name="connectivity_offline">Sin conexion. Mostrando datos guardados.</string>
+    <string name="error_generic">Algo salio mal. Intenta de nuevo.</string>
+    <string name="action_retry">Reintentar</string>
+    <string name="filter_type">Tipo</string>
+    <string name="filter_generation">Generacion</string>
+    <string name="filter_clear">Limpiar filtros</string>
+    <string name="search_hint">Buscar Pokemon</string>
+    <string name="screen_pokemon_list">Pokedex</string>
+    <string name="detail_height">Altura</string>
+    <string name="detail_weight">Peso</string>
+    <string name="detail_base_xp">XP base</string>
+    <string name="detail_stats">Estadisticas</string>
+    <string name="detail_abilities">Habilidades</string>
+    <string name="detail_types">Tipos</string>
 </resources>
