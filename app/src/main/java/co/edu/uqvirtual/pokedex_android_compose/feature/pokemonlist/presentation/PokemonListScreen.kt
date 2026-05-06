@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,14 @@ fun PokemonListScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val filteredResults by viewModel.filteredResults.collectAsStateWithLifecycle()
     val pagingItems = viewModel.pagedPokemon.collectAsLazyPagingItems()
+
+    // Auto-retry cuando vuelve la conexion y no hay datos
+    LaunchedEffect(uiState.isOffline) {
+        if (!uiState.isOffline && pagingItems.itemCount == 0 &&
+            pagingItems.loadState.refresh is LoadState.Error) {
+            pagingItems.retry()
+        }
+    }
 
     Scaffold(
         topBar = {
