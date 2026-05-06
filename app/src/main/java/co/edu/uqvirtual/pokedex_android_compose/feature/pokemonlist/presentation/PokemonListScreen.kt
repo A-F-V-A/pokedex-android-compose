@@ -77,10 +77,16 @@ fun PokemonListScreen(
         CompactHeader()
         FilterBar(
             activeFilter = uiState.activeFilter,
+            searchQuery = uiState.searchQuery,
             types = uiState.types,
             generations = uiState.generations,
+            habitats = uiState.habitats,
+            colors = uiState.colors,
+            onSearchQueryChange = viewModel::setSearchQuery,
             onTypeSelected = viewModel::selectTypeFilter,
             onGenerationSelected = viewModel::selectGenerationFilter,
+            onHabitatSelected = viewModel::selectHabitatFilter,
+            onColorSelected = viewModel::selectColorFilter,
             onClearFilters = viewModel::clearFilters
         )
         when (uiState.activeFilter) {
