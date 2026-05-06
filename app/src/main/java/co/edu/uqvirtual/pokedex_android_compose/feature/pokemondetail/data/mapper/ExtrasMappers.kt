@@ -44,7 +44,8 @@ fun EvolutionChainDto.toDomain(): EvolutionChain {
 }
 
 private fun flatten(link: ChainLinkDto, into: MutableList<EvolutionStage>) {
-    val id = extractIdFromUrl(link.species.url) ?: return
+    val url = link.species.url ?: return
+    val id = extractIdFromUrl(url) ?: return
     val detail = link.evolutionDetails.firstOrNull()
     into.add(
         EvolutionStage(

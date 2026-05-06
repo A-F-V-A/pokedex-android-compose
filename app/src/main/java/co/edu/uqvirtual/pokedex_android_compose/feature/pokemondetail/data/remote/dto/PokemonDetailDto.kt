@@ -34,7 +34,8 @@ data class AbilitySlotDto(
 
 @JsonClass(generateAdapter = true)
 data class NamedDto(
-    @Json(name = "name") val name: String
+    @Json(name = "name") val name: String,
+    @Json(name = "url") val url: String? = null
 )
 
 @JsonClass(generateAdapter = true)
