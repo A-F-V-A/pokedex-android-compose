@@ -33,6 +33,16 @@ import co.edu.uqvirtual.pokedex_android_compose.shared.ui.components.Connectivit
 import co.edu.uqvirtual.pokedex_android_compose.shared.ui.components.ErrorView
 import co.edu.uqvirtual.pokedex_android_compose.shared.ui.components.LoadingIndicator
 import co.edu.uqvirtual.pokedex_android_compose.shared.ui.components.PokemonCard
+import java.io.IOException
+
+private fun Throwable.isLikelyNetworkError(): Boolean {
+    if (this is IOException) return true
+    val msg = message.orEmpty()
+    return msg.contains("Unable to resolve host", ignoreCase = true) ||
+        msg.contains("UnknownHostException", ignoreCase = true) ||
+        msg.contains("No address associated", ignoreCase = true) ||
+        msg.contains("timeout", ignoreCase = true)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +53,13 @@ fun PokemonListScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val filteredResults by viewModel.filteredResults.collectAsStateWithLifecycle()
     val pagingItems = viewModel.pagedPokemon.collectAsLazyPagingItems()
+
+    // Considera offline si el OS reporta sin red O si la API esta fallando con
+    // error de red (DNS, timeout, IO). Cubre el caso del emulador con DNS roto.
+    val refreshError = (pagingItems.loadState.refresh as? LoadState.Error)?.error
+    val appendError = (pagingItems.loadState.append as? LoadState.Error)?.error
+    val networkProblem = listOfNotNull(refreshError, appendError).any { it.isLikelyNetworkError() }
+    val effectiveOffline = uiState.isOffline || networkProblem
 
     // Auto-retry cuando vuelve la conexion y no hay datos
     LaunchedEffect(uiState.isOffline) {
@@ -62,7 +79,7 @@ fun PokemonListScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            ConnectivityBanner(isOffline = uiState.isOffline)
+            ConnectivityBanner(isOffline = effectiveOffline)
             FilterBar(
                 activeFilter = uiState.activeFilter,
                 types = uiState.types,
