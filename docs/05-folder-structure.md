@@ -22,12 +22,13 @@ co/edu/uqvirtual/pokedex_android_compose/
 |
 |-- shared/                             UI Y UTILIDADES REUTILIZABLES
 |   `-- ui/
-|       |-- theme/                      (Color, Type, Theme con Material3)
+|       |-- theme/                      (Color, Type, Theme con Material3, TypeColors por tipo)
 |       `-- components/
 |           |-- ConnectivityBanner.kt
 |           |-- LoadingIndicator.kt
 |           |-- ErrorView.kt
-|           `-- PokemonCard.kt
+|           |-- PokemonCard.kt          (gradiente por tipo + Pokeball decorativa)
+|           `-- PokeballIcon.kt         (vectorial dibujado con Canvas)
 |
 `-- feature/
     |-- pokemonlist/
@@ -49,22 +50,34 @@ co/edu/uqvirtual/pokedex_android_compose/
     |   |   |-- PokemonListUiState.kt
     |   |   `-- components/FilterBar.kt
     |   `-- di/PokemonListModule.kt
-    `-- pokemondetail/
+    |-- pokemondetail/
+    |   |-- data/
+    |   |   |-- remote/                  (PokemonDetailApi con 5 endpoints + dto/...)
+    |   |   |-- local/                   (PokemonDetailEntity, PokemonDetailDao)
+    |   |   |-- mapper/                  (PokemonDetailMappers, ExtrasMappers)
+    |   |   `-- repository/PokemonDetailRepositoryImpl.kt
+    |   |-- domain/
+    |   |   |-- model/                   (PokemonDetail, PokemonExtras: species, evolution, ability, encounters)
+    |   |   |-- repository/PokemonDetailRepository.kt
+    |   |   `-- usecase/                 (Get*UseCase x5)
+    |   |-- presentation/
+    |   |   |-- PokemonDetailViewModel.kt
+    |   |   |-- PokemonDetailScreen.kt   (hero con gradiente, secciones, botón atrapar)
+    |   |   |-- PokemonDetailUiState.kt
+    |   |   `-- components/              (StatBar, CatchButton, EvolutionRow)
+    |   `-- di/PokemonDetailModule.kt
+    `-- caughtpokemon/
         |-- data/
-        |   |-- remote/                  (PokemonDetailApi, dto)
-        |   |-- local/                   (PokemonDetailEntity, PokemonDetailDao)
-        |   |-- mapper/PokemonDetailMappers.kt
-        |   `-- repository/PokemonDetailRepositoryImpl.kt
+        |   |-- local/                   (CaughtPokemonEntity, CaughtPokemonDao)
+        |   `-- repository/CaughtPokemonRepositoryImpl.kt
         |-- domain/
-        |   |-- model/PokemonDetail.kt
-        |   |-- repository/PokemonDetailRepository.kt
-        |   `-- usecase/GetPokemonDetailUseCase.kt
+        |   |-- model/CaughtPokemon.kt
+        |   |-- repository/CaughtPokemonRepository.kt
+        |   `-- usecase/CaughtPokemonUseCases.kt  (Get/Count/Is/Catch/Release)
         |-- presentation/
-        |   |-- PokemonDetailViewModel.kt
-        |   |-- PokemonDetailScreen.kt
-        |   |-- PokemonDetailUiState.kt
-        |   `-- components/StatBar.kt
-        `-- di/PokemonDetailModule.kt
+        |   |-- CaughtPokemonViewModel.kt
+        |   `-- CaughtPokemonScreen.kt
+        `-- di/CaughtPokemonModule.kt
 ```
 
 ## Que vive en cada nivel

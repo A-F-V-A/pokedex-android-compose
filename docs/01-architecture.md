@@ -30,8 +30,17 @@ flowchart TB
         UC4[GetTypesUseCase]
         UC5[GetGenerationsUseCase]
         UC6[GetPokemonDetailUseCase]
+        UC7[GetPokemonSpeciesUseCase]
+        UC8[GetEvolutionChainUseCase]
+        UC9[GetAbilityDetailUseCase]
+        UC10[GetPokemonEncountersUseCase]
+        UC11[CatchPokemonUseCase]
+        UC12[ReleasePokemonUseCase]
+        UC13[IsPokemonCaughtUseCase]
+        UC14[GetCaughtPokemonUseCase]
         IRepo1[PokemonRepository iface]
         IRepo2[PokemonDetailRepository iface]
+        IRepo3[CaughtPokemonRepository iface]
     end
 
     subgraph DATA["Data"]

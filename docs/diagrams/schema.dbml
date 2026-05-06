@@ -63,6 +63,14 @@ Table remote_keys {
   next_key integer [note: 'null si es la ultima pagina']
 }
 
+Table caught_pokemon {
+  pokemon_id integer [pk, note: 'Sin FK a propósito: persiste aunque el cache se invalide']
+  name varchar [not null]
+  image_url varchar
+  nickname varchar [note: 'Opcional, por si el usuario lo personaliza']
+  caught_at integer [not null, note: 'Epoch ms']
+}
+
 Ref: pokemon_detail.id > pokemon.id
 Ref: pokemon_type_cross_ref.pokemon_id > pokemon.id
 Ref: pokemon_type_cross_ref.type_name > type.name

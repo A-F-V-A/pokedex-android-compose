@@ -17,7 +17,7 @@ Alternativas descartadas:
 
 ## Esquema (resumen)
 
-7 tablas:
+8 tablas:
 
 1. `pokemon` - lista basica cacheada por pagina.
 2. `pokemon_detail` - ficha tecnica completa.
@@ -26,6 +26,7 @@ Alternativas descartadas:
 5. `pokemon_type_cross_ref` - muchos-a-muchos pokemon <-> tipo.
 6. `pokemon_generation_cross_ref` - muchos-a-muchos pokemon <-> generacion.
 7. `remote_keys` - claves prev/next del RemoteMediator de Paging 3.
+8. `caught_pokemon` - Pokemon que el usuario marco como atrapados (persistente).
 
 ## Diagrama ER (Mermaid)
 
@@ -81,7 +82,16 @@ erDiagram
         int prevKey
         int nextKey
     }
+    CAUGHT_POKEMON {
+        int pokemonId PK
+        string name
+        string imageUrl
+        string nickname
+        long caughtAt
+    }
 ```
+
+> `caught_pokemon` no tiene FK a `pokemon` a proposito: queremos que un Pokemon atrapado siga existiendo en la coleccion del usuario aunque el cache de la lista paginada se invalide.
 
 ## Detalle de cada tabla
 
@@ -111,6 +121,20 @@ Tienen indice secundario sobre `typeName` y `generationName` para acelerar los j
 
 ### `remote_keys`
 Tabla obligatoria para el `RemoteMediator` de Paging 3. Mantiene las claves de paginacion (`prevKey`, `nextKey`) por cada Pokemon, lo que permite seguir paginando despues de cerrar la app.
+
+### `caught_pokemon`
+Almacena los Pokemon atrapados por el usuario. Se llena desde el boton "Atrapar" del detalle y se vacia con el boton "Liberar" desde la pantalla "Mis atrapados". Sobrevive al cache: aunque se borre la lista paginada, los atrapados persisten.
+
+Campos:
+- `pokemonId` (PK): id nacional del Pokemon.
+- `name`, `imageUrl`: copia denormalizada para que la pantalla "Mis atrapados" no necesite hacer joins ni consultar la red.
+- `nickname` (opcional): por si el usuario le pone un sobrenombre (no expuesto en la UI todavia).
+- `caughtAt`: epoch ms para ordenar por mas reciente.
+
+DAOs relevantes (`CaughtPokemonDao`):
+- `observeAll()`: Flow que alimenta la pantalla principal de atrapados.
+- `observeIsCaught(id)`: Flow booleano que el detalle observa para alternar entre "Atrapar" y "Liberar".
+- `observeCount()`: para mostrar contador en la barra superior de "Mis atrapados".
 
 ## DBML completo
 

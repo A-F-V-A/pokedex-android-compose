@@ -12,6 +12,7 @@ Esta carpeta contiene toda la documentacion del proyecto. Cada archivo cubre un 
 | 04 | [Flujo de datos](04-data-flow.md) | Diagramas de secuencia: online, offline, filtros, paginacion |
 | 05 | [Estructura de carpetas](05-folder-structure.md) | Como esta organizado el codigo y por que (SOLID) |
 | 06 | [Como ejecutar](06-setup.md) | Requisitos, pasos para abrir, correr en emulador |
+| 07 | [Sistema de Captura](07-catch-system.md) | Atrapar/liberar Pokemon, persistencia local y animaciones |
 
 ## Diagramas
 

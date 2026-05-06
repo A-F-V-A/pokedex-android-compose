@@ -38,13 +38,16 @@
 
 Una vez instalado:
 
-1. Abrir la app -> debe mostrar 20 Pokemon.
-2. Hacer scroll hacia abajo -> debe cargar mas paginas automaticamente.
-3. Tocar el dropdown "Tipo" -> elegir `fire` -> el grid se filtra a Pokemon de fuego.
+1. Abrir la app -> debe mostrar 20 Pokemon en cards con gradiente.
+2. Hacer scroll hacia abajo -> debe cargar mas paginas automaticamente (Paging 3).
+3. Tocar el dropdown "Tipo" -> elegir `fire` -> el grid se filtra a Pokemon de fuego, las cards usan el color del tipo.
 4. Tocar "Limpiar filtros" -> vuelve a la lista paginada.
 5. Tocar el dropdown "Generacion" -> elegir `generation-i` -> aparecen los 151 Pokemon de Kanto.
-6. Tocar una card -> abre el detalle con stats, sprite oficial y habilidades.
-7. **Modo offline**: activar modo avion, cerrar y reabrir la app. Debe seguir mostrando todo lo cacheado y aparecer el banner rojo "Sin conexion".
+6. Tocar una card -> abre el detalle con hero gradiente, stats, evolucion animada, abilities con descripcion y ubicaciones donde encontrarlo.
+7. Tocar el boton "Atrapar" (Pokeball roja) -> animacion de captura, el Pokemon se guarda en SQLite.
+8. Bottom nav -> "Mis atrapados" -> ver la lista de capturados con contador en la AppBar.
+9. Tocar "Liberar" en una card de atrapados -> dialog de confirmacion -> el Pokemon vuelve a la naturaleza.
+10. **Modo offline**: activar modo avion, cerrar y reabrir la app. Debe seguir mostrando todo lo cacheado, los atrapados, y aparecer el banner rojo "Sin conexion".
 
 ## Logs
 
