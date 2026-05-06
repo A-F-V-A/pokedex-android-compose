@@ -39,6 +39,29 @@ interface PokemonDao {
     )
     fun getByGeneration(generationName: String): Flow<List<PokemonEntity>>
 
+    @Query(
+        """
+        SELECT p.* FROM pokemon p
+        INNER JOIN pokemon_habitat_cross_ref phc ON phc.pokemonId = p.id
+        WHERE phc.habitatName = :habitatName
+        ORDER BY p.id ASC
+        """
+    )
+    fun getByHabitat(habitatName: String): Flow<List<PokemonEntity>>
+
+    @Query(
+        """
+        SELECT p.* FROM pokemon p
+        INNER JOIN pokemon_color_cross_ref pcc ON pcc.pokemonId = p.id
+        WHERE pcc.colorName = :colorName
+        ORDER BY p.id ASC
+        """
+    )
+    fun getByColor(colorName: String): Flow<List<PokemonEntity>>
+
+    @Query("SELECT * FROM pokemon WHERE name LIKE '%' || :query || '%' ORDER BY id ASC LIMIT 100")
+    fun searchByName(query: String): Flow<List<PokemonEntity>>
+
     @Query("DELETE FROM pokemon")
     suspend fun clearAll()
 }

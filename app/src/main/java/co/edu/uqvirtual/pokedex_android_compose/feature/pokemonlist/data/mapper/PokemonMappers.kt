@@ -1,11 +1,15 @@
 package co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.mapper
 
+import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.ColorEntity
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.GenerationEntity
+import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.HabitatEntity
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.PokemonEntity
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.TypeEntity
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.remote.dto.NamedResourceDto
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.domain.model.Generation
+import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.domain.model.Habitat
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.domain.model.Pokemon
+import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.domain.model.PokemonColor
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.domain.model.PokemonType
 
 private const val ARTWORK_TEMPLATE =
@@ -43,3 +47,11 @@ fun NamedResourceDto.toGenerationEntity(): GenerationEntity = GenerationEntity(n
 fun TypeEntity.toDomain(): PokemonType = PokemonType(name = name)
 
 fun GenerationEntity.toDomain(): Generation = Generation(name = name)
+
+fun NamedResourceDto.toHabitatEntity(): HabitatEntity = HabitatEntity(name = name, url = url)
+
+fun NamedResourceDto.toColorEntity(): ColorEntity = ColorEntity(name = name, url = url)
+
+fun HabitatEntity.toDomain(): Habitat = Habitat(name = name)
+
+fun ColorEntity.toDomain(): PokemonColor = PokemonColor(name = name)

@@ -5,7 +5,9 @@ import androidx.room.Room
 import co.edu.uqvirtual.pokedex_android_compose.core.database.PokedexDatabase
 import co.edu.uqvirtual.pokedex_android_compose.feature.caughtpokemon.data.local.CaughtPokemonDao
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemondetail.data.local.PokemonDetailDao
+import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.ColorDao
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.GenerationDao
+import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.HabitatDao
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.PokemonDao
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.RemoteKeysDao
 import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.data.local.TypeDao
@@ -40,6 +42,12 @@ object DatabaseModule {
 
     @Provides
     fun provideGenerationDao(db: PokedexDatabase): GenerationDao = db.generationDao()
+
+    @Provides
+    fun provideHabitatDao(db: PokedexDatabase): HabitatDao = db.habitatDao()
+
+    @Provides
+    fun provideColorDao(db: PokedexDatabase): ColorDao = db.colorDao()
 
     @Provides
     fun provideRemoteKeysDao(db: PokedexDatabase): RemoteKeysDao = db.remoteKeysDao()
