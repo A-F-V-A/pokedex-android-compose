@@ -2,6 +2,7 @@
     <string name="app_name">Pokedex</string>
     <string name="cd_pokemon_image">Imagen del Pokemon</string>
     <string name="connectivity_offline">Sin conexion. Mostrando datos guardados.</string>
+    <string name="connectivity_online">En linea</string>
     <string name="error_generic">Algo salio mal. Intenta de nuevo.</string>
     <string name="action_retry">Reintentar</string>
     <string name="filter_type">Tipo</string>

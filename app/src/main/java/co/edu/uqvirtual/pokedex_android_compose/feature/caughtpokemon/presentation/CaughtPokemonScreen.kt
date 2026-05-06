@@ -50,6 +50,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import co.edu.uqvirtual.pokedex_android_compose.R
 import co.edu.uqvirtual.pokedex_android_compose.feature.caughtpokemon.domain.model.CaughtPokemon
+import co.edu.uqvirtual.pokedex_android_compose.shared.ui.components.ConnectivityBanner
 import co.edu.uqvirtual.pokedex_android_compose.shared.ui.components.PokeballIcon
 import co.edu.uqvirtual.pokedex_android_compose.shared.ui.theme.PokedexRed
 import co.edu.uqvirtual.pokedex_android_compose.shared.ui.theme.PokedexRedDark
@@ -61,6 +62,7 @@ fun CaughtPokemonScreen(
     viewModel: CaughtPokemonViewModel = hiltViewModel()
 ) {
     val caught by viewModel.caughtPokemon.collectAsStateWithLifecycle()
+    val isOffline by viewModel.isOffline.collectAsStateWithLifecycle()
     var pendingRelease by remember { mutableStateOf<CaughtPokemon?>(null) }
 
     Scaffold(
@@ -83,9 +85,11 @@ fun CaughtPokemonScreen(
             )
         }
     ) { padding ->
-        Box(modifier = Modifier
+        Column(modifier = Modifier
             .fillMaxSize()
             .padding(padding)) {
+            ConnectivityBanner(isOffline = isOffline)
+            Box(modifier = Modifier.fillMaxSize()) {
             if (caught.isEmpty()) {
                 EmptyState()
             } else {
@@ -104,6 +108,7 @@ fun CaughtPokemonScreen(
                         )
                     }
                 }
+            }
             }
         }
     }
