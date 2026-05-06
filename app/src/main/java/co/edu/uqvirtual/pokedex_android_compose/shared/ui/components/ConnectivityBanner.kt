@@ -63,7 +63,7 @@ fun ConnectivityBanner(
         modifier = modifier
             .fillMaxWidth()
             .background(backgroundColor)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 12.dp, vertical = 3.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -74,9 +74,9 @@ fun ConnectivityBanner(
         Text(
             text = text,
             color = Color.White,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(start = 8.dp)
+            modifier = Modifier.padding(start = 6.dp)
         )
     }
 }

@@ -16,8 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -28,16 +28,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -71,69 +67,66 @@ fun PokemonDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val detail = uiState.detail
-    val typeColor = detail?.types?.firstOrNull()?.let { TypeColors.forType(it) } ?: MaterialTheme.colorScheme.primary
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = detail?.name?.replaceFirstChar { it.titlecase() } ?: "",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = typeColor,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
-                )
-            )
-        }
-    ) { padding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                ConnectivityBanner(isOffline = uiState.isOffline)
-                when {
-                    uiState.isLoading && detail == null -> LoadingIndicator()
-                    detail == null && uiState.errorMessage != null -> ErrorView(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Banner siempre arriba, fuera del gradiente del hero
+            ConnectivityBanner(isOffline = uiState.isOffline)
+
+            when {
+                uiState.isLoading && detail == null -> Column(modifier = Modifier.fillMaxSize()) {
+                    TransparentTopBar(onBack = onBack, dark = true)
+                    LoadingIndicator()
+                }
+                detail == null && uiState.errorMessage != null -> Column(modifier = Modifier.fillMaxSize()) {
+                    TransparentTopBar(onBack = onBack, dark = true)
+                    ErrorView(
                         message = uiState.errorMessage
                             ?: stringResource(id = R.string.error_generic),
                         onRetry = viewModel::retry
                     )
-                    detail != null -> PokemonDetailContent(
-                        detail = detail,
-                        species = uiState.species,
-                        evolutionStages = uiState.evolutionChain?.stages.orEmpty(),
-                        abilities = uiState.abilities,
-                        encounters = uiState.encounters,
-                        isLoadingEvolution = uiState.isLoadingEvolution,
-                        isCaught = uiState.isCaught,
-                        showCatchAnimation = uiState.showCatchAnimation,
-                        onCatchToggle = viewModel::toggleCatch
-                    )
                 }
+                detail != null -> PokemonDetailContent(
+                    detail = detail,
+                    species = uiState.species,
+                    evolutionStages = uiState.evolutionChain?.stages.orEmpty(),
+                    abilities = uiState.abilities,
+                    encounters = uiState.encounters,
+                    isLoadingEvolution = uiState.isLoadingEvolution,
+                    isCaught = uiState.isCaught,
+                    showCatchAnimation = uiState.showCatchAnimation,
+                    onCatchToggle = viewModel::toggleCatch,
+                    onBack = onBack
+                )
             }
+        }
 
-            AnimatedVisibility(
-                visible = uiState.showCatchAnimation,
-                enter = fadeIn() + scaleIn(initialScale = 0.4f),
-                exit = fadeOut() + scaleOut(),
-                modifier = Modifier.align(Alignment.Center)
-            ) {
-                CatchAnimationOverlay(visible = true)
-            }
+        AnimatedVisibility(
+            visible = uiState.showCatchAnimation,
+            enter = fadeIn() + scaleIn(initialScale = 0.4f),
+            exit = fadeOut() + scaleOut(),
+            modifier = Modifier.align(Alignment.Center)
+        ) {
+            CatchAnimationOverlay(visible = true)
+        }
+    }
+}
+
+@Composable
+private fun TransparentTopBar(onBack: () -> Unit, dark: Boolean) {
+    val tint = if (dark) MaterialTheme.colorScheme.onSurface else Color.White
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = onBack) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = null,
+                tint = tint
+            )
         }
     }
 }
@@ -148,13 +141,22 @@ private fun PokemonDetailContent(
     isLoadingEvolution: Boolean,
     isCaught: Boolean,
     showCatchAnimation: Boolean,
-    onCatchToggle: () -> Unit
+    onCatchToggle: () -> Unit,
+    onBack: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 24.dp)
     ) {
-        item { HeroHeader(detail = detail, isCaught = isCaught, onCatchToggle = onCatchToggle, showCatchAnimation = showCatchAnimation) }
+        item {
+            HeroHeader(
+                detail = detail,
+                isCaught = isCaught,
+                onCatchToggle = onCatchToggle,
+                showCatchAnimation = showCatchAnimation,
+                onBack = onBack
+            )
+        }
         item { Spacer16() }
 
         species?.let {
@@ -261,50 +263,73 @@ private fun HeroHeader(
     detail: PokemonDetail,
     isCaught: Boolean,
     showCatchAnimation: Boolean,
-    onCatchToggle: () -> Unit
+    onCatchToggle: () -> Unit,
+    onBack: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(TypeColors.gradientFor(detail.types))
-            .padding(horizontal = 16.dp, vertical = 24.dp)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "#%03d".format(detail.id),
-                color = Color.White.copy(alpha = 0.9f),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = detail.name.replaceFirstChar { it.titlecase() },
-                color = Color.White,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.ExtraBold
-            )
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // Top bar transparente (sin titulo, solo flecha)
             Row(
-                modifier = Modifier.padding(top = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                detail.types.forEach { type -> TypeChip(type = type) }
-            }
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(detail.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = null,
                 modifier = Modifier
-                    .padding(top = 16.dp)
-                    .size(220.dp),
-                contentScale = ContentScale.Fit
-            )
-            CatchButton(
-                isCaught = isCaught,
-                isAnimating = showCatchAnimation,
-                onClick = onCatchToggle,
-                modifier = Modifier.padding(top = 16.dp)
-            )
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = "#%03d".format(detail.id),
+                    color = Color.White.copy(alpha = 0.9f),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = detail.name.replaceFirstChar { it.titlecase() },
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Row(
+                    modifier = Modifier.padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    detail.types.forEach { type -> TypeChip(type = type) }
+                }
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(detail.imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .size(220.dp),
+                    contentScale = ContentScale.Fit
+                )
+                CatchButton(
+                    isCaught = isCaught,
+                    isAnimating = showCatchAnimation,
+                    onClick = onCatchToggle,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
+                )
+            }
         }
     }
 }
