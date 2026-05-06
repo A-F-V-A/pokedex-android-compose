@@ -3,22 +3,27 @@ package co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.presentatio
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,6 +37,7 @@ import co.edu.uqvirtual.pokedex_android_compose.feature.pokemonlist.presentation
 import co.edu.uqvirtual.pokedex_android_compose.shared.ui.components.ConnectivityBanner
 import co.edu.uqvirtual.pokedex_android_compose.shared.ui.components.ErrorView
 import co.edu.uqvirtual.pokedex_android_compose.shared.ui.components.LoadingIndicator
+import co.edu.uqvirtual.pokedex_android_compose.shared.ui.components.PokeballIcon
 import co.edu.uqvirtual.pokedex_android_compose.shared.ui.components.PokemonCard
 import java.io.IOException
 
@@ -44,7 +50,6 @@ private fun Throwable.isLikelyNetworkError(): Boolean {
         msg.contains("timeout", ignoreCase = true)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PokemonListScreen(
     onPokemonClick: (Int) -> Unit,
@@ -54,52 +59,60 @@ fun PokemonListScreen(
     val filteredResults by viewModel.filteredResults.collectAsStateWithLifecycle()
     val pagingItems = viewModel.pagedPokemon.collectAsLazyPagingItems()
 
-    // Considera offline si el OS reporta sin red O si la API esta fallando con
-    // error de red (DNS, timeout, IO). Cubre el caso del emulador con DNS roto.
     val refreshError = (pagingItems.loadState.refresh as? LoadState.Error)?.error
     val appendError = (pagingItems.loadState.append as? LoadState.Error)?.error
     val networkProblem = listOfNotNull(refreshError, appendError).any { it.isLikelyNetworkError() }
     val effectiveOffline = uiState.isOffline || networkProblem
 
-    // Auto-retry cuando vuelve la conexion y no hay datos
     LaunchedEffect(uiState.isOffline) {
         if (!uiState.isOffline && pagingItems.itemCount == 0 &&
-            pagingItems.loadState.refresh is LoadState.Error) {
+            pagingItems.loadState.refresh is LoadState.Error
+        ) {
             pagingItems.retry()
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text(stringResource(id = R.string.screen_pokemon_list)) })
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            ConnectivityBanner(isOffline = effectiveOffline)
-            FilterBar(
-                activeFilter = uiState.activeFilter,
-                types = uiState.types,
-                generations = uiState.generations,
-                onTypeSelected = viewModel::selectTypeFilter,
-                onGenerationSelected = viewModel::selectGenerationFilter,
-                onClearFilters = viewModel::clearFilters
+    Column(modifier = Modifier.fillMaxSize()) {
+        ConnectivityBanner(isOffline = effectiveOffline)
+        CompactHeader()
+        FilterBar(
+            activeFilter = uiState.activeFilter,
+            types = uiState.types,
+            generations = uiState.generations,
+            onTypeSelected = viewModel::selectTypeFilter,
+            onGenerationSelected = viewModel::selectGenerationFilter,
+            onClearFilters = viewModel::clearFilters
+        )
+        when (uiState.activeFilter) {
+            ActiveFilter.None -> PagedPokemonGrid(
+                items = pagingItems,
+                onPokemonClick = onPokemonClick
             )
-            when (uiState.activeFilter) {
-                ActiveFilter.None -> PagedPokemonGrid(
-                    items = pagingItems,
-                    onPokemonClick = onPokemonClick
-                )
-                else -> FilteredPokemonGrid(
-                    pokemon = filteredResults,
-                    isLoading = uiState.isLoadingFilter,
-                    onPokemonClick = onPokemonClick
-                )
-            }
+            else -> FilteredPokemonGrid(
+                pokemon = filteredResults,
+                isLoading = uiState.isLoadingFilter,
+                onPokemonClick = onPokemonClick
+            )
         }
+    }
+}
+
+@Composable
+private fun CompactHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PokeballIcon(modifier = Modifier.size(28.dp))
+        Text(
+            text = stringResource(id = R.string.screen_pokemon_list),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 10.dp)
+        )
     }
 }
 
@@ -125,9 +138,9 @@ private fun PagedPokemonGrid(
             columns = GridCells.Fixed(2),
             state = gridState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(0.dp),
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             items(
                 count = items.itemCount,
@@ -143,10 +156,10 @@ private fun PagedPokemonGrid(
                 )
             }
             if (appendState is LoadState.Loading) {
-                item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
+                item(span = { GridItemSpan(2) }) {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -171,9 +184,9 @@ private fun FilteredPokemonGrid(
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
+        horizontalArrangement = Arrangement.spacedBy(0.dp)
     ) {
         items(
             count = pokemon.size,

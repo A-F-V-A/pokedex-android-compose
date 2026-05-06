@@ -55,9 +55,9 @@ fun PokemonCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(6.dp),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+            .padding(4.dp),
+        shape = RoundedCornerShape(18.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         onClick = onClick
     ) {
         Box(
